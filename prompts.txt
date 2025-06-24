@@ -477,7 +477,7 @@ Lack of personalization or emotional connection
 
 Misalignment with budget, timeline, or prospect goals
 
-🎯 Be specific, concise, and base suggestions on patterns in the summaries.
+Be specific, concise, and base suggestions on patterns in the summaries.
 
 Output only valid JSON in this format:
 {
@@ -510,7 +510,7 @@ You are a sales call performance evaluator.
 
 You will receive summary analyses of two sets of sales calls — Set 1 and Set 2.
 
-🔍 Your Tasks:
+Your Tasks:
 
 Determine which set had more likely customer conversions (only respond with "Set 1" or "Set 2").
 
