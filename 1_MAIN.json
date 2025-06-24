@@ -1,0 +1,440 @@
+{
+  "name": "EGMAT-1",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1QSaXUeSocya9bnc5HBUtN6H7pbEr0641",
+          "mode": "list",
+          "cachedResultName": "jan",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1QSaXUeSocya9bnc5HBUtN6H7pbEr0641"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -60
+      ],
+      "id": "c5d160ad-eeba-4e7d-94b8-cd6939783bdc",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "86Ikndal7boHJ7bY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -220,
+        -60
+      ],
+      "id": "e67bf45e-655a-41d7-bc46-8500f5a03836",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "86Ikndal7boHJ7bY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert sales call analyst. Your task is to extract and structure ALL relevant information from the sales call transcript below into detailed JSON format. This structured output will be used in downstream workflows for conversion analysis, performance evaluation, and follow-up strategy.\nNOTE:“Do not hallucinate fields. Use 'not mentioned' if unsure.”\nPlease output a well-structured JSON following the schema provided. Use real values from the call. Use \"not mentioned\" or null where information is unavailable. Rate qualitative items using the options provided.\nNOTE : dont make any JSON Structring errors if anything is not mentioned just use the word \"not mentioned\" but dont make any JSON Structure issues as it can disturb the whole flow\n\n{\n  \"call_metadata\": {\n    \n\n    \"duration\": \"call length if mentioned\",\n    \n    \"call_type\": \"inbound/outbound/follow-up\"\n  },\n  \n  \"participants\": {\n    \"sales_rep\": {\n      \"name\": \"rep name if mentioned\",\n      \"experience_level\": \"junior/senior/expert (infer from performance)\",\n      \"communication_style\": \"aggressive/consultative/friendly/professional\"\n    },\n    \"prospect\": {\n      \"name\": \"prospect name if mentioned\",\n      \"demographics\": {\n        \"location\": \"city/country if mentioned\",\n        \"profession\": \"job title/industry if mentioned\",\n        \"experience_level\": \"student/working professional/career changer\",\n        \"age_group\": \"infer if possible: early-career/mid-career/senior\"\n      }\n    }\n  },\n  \n  \"gmat_context\": {\n    \"current_status\": \"first-time taker/retaker\",\n    \"previous_scores\": \"any mentioned scores\",\n    \"target_score\": \"desired GMAT score\",\n    \"timeline\": \"when planning to take GMAT\",\n    \"preparation_history\": \"previous prep methods tried\",\n    \"motivation\": \"career goals, MBA plans, etc.\"\n  },\n  \n  \"sales_process\": {\n    \"call_structure\": {\n      \"opening_quality\": \"poor/average/good/excellent\",\n      \"discovery_questions\": [\"list key questions asked\"],\n      \"presentation_given\": true/false,\n      \"demo_shown\": true/false,\n      \"pricing_discussed\": true/false,\n      \"close_attempted\": true/false\n    },\n    \n    \"rep_performance\": {\n      \"rapport_building\": \"poor/weak/good/excellent\",\n      \"needs_discovery\": \"poor/weak/good/excellent\",\n      \"value_proposition\": \"unclear/weak/clear/compelling\",\n      \"objection_handling\": \"poor/avoided/adequate/excellent\",\n      \"urgency_creation\": \"none/weak/moderate/strong\",\n      \"follow_up_commitment\": \"none/vague/specific/detailed\"\n    }\n  },\n  \n  \"prospect_engagement\": {\n    \"interest_level\": \"low/moderate/high/very high\",\n    \"engagement_indicators\": [\"asking questions\", \"taking notes\", \"requesting info\", etc.],\n    \"buying_signals\": [\"ready to start\", \"budget confirmed\", \"timeline set\", etc.],\n    \"participation_quality\": \"passive/responsive/engaged/enthusiastic\",\n    \"question_types\": [\"clarification\", \"deep-dive\", \"comparison\", \"implementation\"]\n  },\n  \n  \"objections_and_concerns\": {\n    \"primary_objections\": [\n      {\n        \"type\": \"price/time/competition/trust/need\",\n        \"specific_concern\": \"exact wording/concern raised\",\n        \"intensity\": \"weak/moderate/strong\",\n        \"resolved\": true/false,\n        \"resolution_quality\": \"poor/adequate/good/excellent\"\n      }\n    ],\n    \"hesitation_points\": [\"moments of uncertainty\"],\n    \"comparison_requests\": [\"competitors mentioned\"],\n    \"stalling_tactics\": [\"need to think\", \"discuss with spouse\", etc.]\n  },\n  \n  \"value_communication\": {\n    \"benefits_presented\": [\"specific benefits mentioned\"],\n    \"features_discussed\": [\"platform features covered\"],\n    \"social_proof_used\": [\"testimonials\", \"success stories\", \"statistics\"],\n    \"differentiation_points\": [\"how e-GMAT positioned vs competitors\"],\n    \"roi_discussion\": \"financial benefits discussed\"\n  },\n  \n  \"pricing_and_budget\": {\n    \"budget_discussed\": true/false,\n    \"budget_amount\": \"specific amount if mentioned\",\n    \"price_reaction\": \"positive/neutral/negative/shocked\",\n    \"payment_options_discussed\": true/false,\n    \"price_objections\": [\"specific price-related concerns\"],\n    \"value_justification\": \"how rep justified pricing\"\n  },\n  \n  \"commitment_and_next_steps\": {\n    \"commitment_level\": \"none/considering/interested/ready to buy\",\n    \"next_steps_defined\": true/false,\n    \"specific_actions\": [\"what prospect agreed to do\"],\n    \"timeline_commitment\": \"when prospect will decide/start\",\n    \"follow_up_scheduled\": true/false,\n    \"decision_makers\": \"who else needs to be involved\"\n  },\n  \n  \"conversion_indicators\": {\n    \"positive_signals\": [\"strong buying signals observed\"],\n    \"negative_signals\": [\"red flags or concerns\"],\n    \"conversion_probability\": \"low/moderate/high (initial assessment)\",\n    \"key_success_factors\": [\"what went well\"],\n    \"major_barriers\": [\"biggest obstacles to conversion\"]\n  },\n  \n  \"communication_quality\": {\n    \"clarity_of_communication\": \"poor/adequate/good/excellent\",\n    \"technical_explanation\": \"too complex/appropriate/too simple\",\n    \"listening_skills\": \"poor/adequate/good/excellent\",\n    \"empathy_demonstration\": \"none/minimal/moderate/high\",\n    \"professionalism\": \"unprofessional/adequate/professional/exceptional\"\n  },\n  \n  \"competitive_landscape\": {\n    \"competitors_mentioned\": [\"specific competitors discussed\"],\n    \"comparison_requests\": [\"what prospect wanted to compare\"],\n    \"competitive_advantages\": [\"how e-GMAT positioned\"],\n    \"competitive_weaknesses\": [\"areas where competitors seemed stronger\"]\n  },\n  \n  \"urgency_and_timing\": {\n    \"urgency_present\": true/false,\n    \"deadline_mentioned\": \"specific deadline if any\",\n    \"seasonal_factors\": \"application deadlines, test dates, etc.\",\n    \"personal_timeline\": \"prospect's personal schedule constraints\"\n  },\n  \n  \"follow_up_opportunities\": {\n    \"information_requests\": [\"what prospect wanted to receive\"],\n    \"decision_timeline\": \"when prospect will make decision\",\n    \"key_stakeholders\": [\"who else influences decision\"],\n    \"preferred_communication\": \"email/phone/demo/meeting\",\n    \"specific_concerns_to_address\": [\"follow-up topics needed\"]\n  },\n  \n  \"call_outcome\": {\n    \"immediate_result\": \"sale/follow-up scheduled/objection/no interest\",\n    \"prospect_satisfaction\": \"dissatisfied/neutral/satisfied/very satisfied\",\n    \"rep_satisfaction\": \"how well rep felt call went\",\n    \"conversion_likelihood\": \"low/moderate/high/very high\",\n    \"primary_reason\": \"main factor influencing outcome\"\n  },\n  \n  \"improvement_opportunities\": {\n    \"missed_opportunities\": [\"what rep could have done better\"],\n    \"stronger_approaches\": [\"alternative strategies that might work\"],\n    \"additional_information_needed\": [\"what would help close the deal\"]\n  },\n  \n  \"raw_insights\": {\n    \"key_quotes\": [\"important verbatim quotes from prospect\"],\n    \"emotional_moments\": [\"high/low points in conversation\"],\n    \"turning_points\": [\"moments that changed call direction\"],\n    \"unique_factors\": [\"anything unusual about this call\"]\n  }\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        -80
+      ],
+      "id": "ed57a3fd-91bb-49da-bc16-ebb6d89723c6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -60
+      ],
+      "id": "1b357d66-a3a7-48a4-a215-bd3ac9a0a10d",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"call_metadata\": {\n    \"duration\": \"call length if mentioned\",\n    \"call_type\": \"inbound, outbound, or follow-up\"\n  },\n  \"participants\": {\n    \"sales_rep\": {\n      \"name\": \"rep name if mentioned\",\n      \"experience_level\": \"junior, senior, or expert (inferred from performance)\",\n      \"communication_style\": \"aggressive, consultative, friendly, or professional\"\n    },\n    \"prospect\": {\n      \"name\": \"prospect name if mentioned\",\n      \"demographics\": {\n        \"location\": \"city/country if mentioned\",\n        \"profession\": \"job title or industry if mentioned\",\n        \"experience_level\": \"student, working professional, or career changer\",\n        \"age_group\": \"early-career, mid-career, or senior\"\n      }\n    }\n  },\n  \"gmat_context\": {\n    \"current_status\": \"first-time taker or retaker\",\n    \"previous_scores\": \"any mentioned scores\",\n    \"target_score\": \"desired GMAT score\",\n    \"timeline\": \"when planning to take GMAT\",\n    \"preparation_history\": \"previous prep methods tried\",\n    \"motivation\": \"career goals, MBA plans, etc.\"\n  },\n  \"sales_process\": {\n    \"call_structure\": {\n      \"opening_quality\": \"poor, average, good, or excellent\",\n      \"discovery_questions\": [\"list key questions asked\"],\n      \"presentation_given\": false,\n      \"demo_shown\": false,\n      \"pricing_discussed\": false,\n      \"close_attempted\": false\n    },\n    \"rep_performance\": {\n      \"rapport_building\": \"poor, weak, good, or excellent\",\n      \"needs_discovery\": \"poor, weak, good, or excellent\",\n      \"value_proposition\": \"unclear, weak, clear, or compelling\",\n      \"objection_handling\": \"poor, avoided, adequate, or excellent\",\n      \"urgency_creation\": \"none, weak, moderate, or strong\",\n      \"follow_up_commitment\": \"none, vague, specific, or detailed\"\n    }\n  },\n  \"prospect_engagement\": {\n    \"interest_level\": \"low, moderate, high, or very high\",\n    \"engagement_indicators\": [\"asking questions\", \"taking notes\", \"requesting info\"],\n    \"buying_signals\": [\"ready to start\", \"budget confirmed\", \"timeline set\"],\n    \"participation_quality\": \"passive, responsive, engaged, or enthusiastic\",\n    \"question_types\": [\"clarification\", \"deep-dive\", \"comparison\", \"implementation\"]\n  },\n  \"objections_and_concerns\": {\n    \"primary_objections\": [\n      {\n        \"type\": \"price, time, competition, trust, or need\",\n        \"specific_concern\": \"exact wording/concern raised\",\n        \"intensity\": \"weak, moderate, or strong\",\n        \"resolved\": false,\n        \"resolution_quality\": \"poor, adequate, good, or excellent\"\n      }\n    ],\n    \"hesitation_points\": [\"moments of uncertainty\"],\n    \"comparison_requests\": [\"competitors mentioned\"],\n    \"stalling_tactics\": [\"need to think\", \"discuss with spouse\"]\n  },\n  \"value_communication\": {\n    \"benefits_presented\": [\"specific benefits mentioned\"],\n    \"features_discussed\": [\"platform features covered\"],\n    \"social_proof_used\": [\"testimonials\", \"success stories\", \"statistics\"],\n    \"differentiation_points\": [\"how e-GMAT positioned vs competitors\"],\n    \"roi_discussion\": \"financial benefits discussed\"\n  },\n  \"pricing_and_budget\": {\n    \"budget_discussed\": false,\n    \"budget_amount\": \"specific amount if mentioned\",\n    \"price_reaction\": \"positive, neutral, negative, or shocked\",\n    \"payment_options_discussed\": false,\n    \"price_objections\": [\"specific price-related concerns\"],\n    \"value_justification\": \"how rep justified pricing\"\n  },\n  \"commitment_and_next_steps\": {\n    \"commitment_level\": \"none, considering, interested, or ready to buy\",\n    \"next_steps_defined\": false,\n    \"specific_actions\": [\"what prospect agreed to do\"],\n    \"timeline_commitment\": \"when prospect will decide/start\",\n    \"follow_up_scheduled\": false,\n    \"decision_makers\": \"who else needs to be involved\"\n  },\n  \"conversion_indicators\": {\n    \"positive_signals\": [\"strong buying signals observed\"],\n    \"negative_signals\": [\"red flags or concerns\"],\n    \"conversion_probability\": \"low, moderate, or high\",\n    \"key_success_factors\": [\"what went well\"],\n    \"major_barriers\": [\"biggest obstacles to conversion\"]\n  },\n  \"communication_quality\": {\n    \"clarity_of_communication\": \"poor, adequate, good, or excellent\",\n    \"technical_explanation\": \"too complex, appropriate, or too simple\",\n    \"listening_skills\": \"poor, adequate, good, or excellent\",\n    \"empathy_demonstration\": \"none, minimal, moderate, or high\",\n    \"professionalism\": \"unprofessional, adequate, professional, or exceptional\"\n  },\n  \"competitive_landscape\": {\n    \"competitors_mentioned\": [\"specific competitors discussed\"],\n    \"comparison_requests\": [\"what prospect wanted to compare\"],\n    \"competitive_advantages\": [\"how e-GMAT positioned\"],\n    \"competitive_weaknesses\": [\"areas where competitors seemed stronger\"]\n  },\n  \"urgency_and_timing\": {\n    \"urgency_present\": false,\n    \"deadline_mentioned\": \"specific deadline if any\",\n    \"seasonal_factors\": \"application deadlines, test dates, etc.\",\n    \"personal_timeline\": \"prospect's personal schedule constraints\"\n  },\n  \"follow_up_opportunities\": {\n    \"information_requests\": [\"what prospect wanted to receive\"],\n    \"decision_timeline\": \"when prospect will make decision\",\n    \"key_stakeholders\": [\"who else influences decision\"],\n    \"preferred_communication\": \"email, phone, demo, or meeting\",\n    \"specific_concerns_to_address\": [\"follow-up topics needed\"]\n  },\n  \"call_outcome\": {\n    \"immediate_result\": \"sale, follow-up scheduled, objection, or no interest\",\n    \"prospect_satisfaction\": \"dissatisfied, neutral, satisfied, or very satisfied\",\n    \"rep_satisfaction\": \"how well rep felt call went\",\n    \"conversion_likelihood\": \"low, moderate, high, or very high\",\n    \"primary_reason\": \"main factor influencing outcome\"\n  },\n  \"improvement_opportunities\": {\n    \"missed_opportunities\": [\"what rep could have done better\"],\n    \"stronger_approaches\": [\"alternative strategies that might work\"],\n    \"additional_information_needed\": [\"what would help close the deal\"]\n  },\n  \"raw_insights\": {\n    \"key_quotes\": [\"important verbatim quotes from prospect\"],\n    \"emotional_moments\": [\"high/low points in conversation\"],\n    \"turning_points\": [\"moments that changed call direction\"],\n    \"unique_factors\": [\"anything unusual about this call\"]\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        140
+      ],
+      "id": "8bc20707-3cc2-465f-b515-77b57c7f62e6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert sales performance evaluator.\n\nNOTE:“Do not hallucinate fields. Use 'not mentioned' if unsure.”\n\nYour tasks:\n\n---\n\n### 1. Conversion Scoring\n\nEvaluate how likely this call is to convert based on:\n- Positive and negative buying signals\n- Commitment level and follow-up\n- Sales rep's rapport and objection handling\n- Value clarity and urgency\n- Any conversion blockers or missed opportunities\n\nUse this scoring scale:\n- 0.000 = no chance of conversion\n- 10.000 = guaranteed conversion\n\n---\n\nnote: the length of reason should be atleast 10 lines explain in a comprehensive way\n### 2. Strengths and Weaknesses\n\nList:\n- **5 to 10 strengths**: what went well in the call (rep performance, buyer signals, alignment)\n- **5 to 10 weaknesses**: risks, objections, or rep mistakes that may hinder conversion\n\n### 3. Deep Insight Extraction\n\nFrom the structured data, extract **at least 10 insights** that meaningfully affect the conversion outcome.\nThese should include both:\n- **Quantitative indicators** (e.g. commitment, urgency, follow-up behavior)\n- **Qualitative cues** (e.g. emotional triggers, decision blockers, trust signals, hesitation points, rep influence)\n\nFocus on:\n- Why this prospect is likely or unlikely to convert\n- Specific patterns in buyer behavior\n- Sales rep's impact (positive or negative)\n- Critical moments in the call that shifted momentum\n- Emotional signals or comparison logic used\n- Any early indicators of deal risk\n\n---\n\n### Output Format:\n\nReturn JSON like this:\n```json\n{\n  \"conversion_score\": float,  // e.g., 8.732 (precise, not rounded)\n  \"reason\": \"string\",         // one-paragraph summary of the score\n  \"strengths\": [              // 2–4 clear call strengths\n    \"string\", \"string\"\n  ],\n  \"weaknesses\": [             // 2–4 barriers or risks\n    \"string\", \"string\"\n  ],\n  \"insights\": [               // at least 10 deep insights\n    \"string\",\n    \"string\",\n    \"... (minimum 10)\"\n  ]\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        760,
+        -100
+      ],
+      "id": "df446fed-acb4-45a8-b41d-ce51124a65f4",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"conversion_score\": 0.000,\n  \"reason\": \"string (summary of why this score was given)\",\n  \"strengths\": [\n    \"string (what went well)\",\n    \"string (another strength)\",\n    \"string (optional)\",\n    \"string (optional)\"\n  ],\n  \"weaknesses\": [\n    \"string (what could be improved)\",\n    \"string (another weakness)\",\n    \"string (optional)\",\n    \"string (optional)\"\n  ],\n  \"insights\": [\n    \"string (deep insight #1 affecting conversion)\",\n    \"string (deep insight #2)\",\n    \"string (deep insight #3)\",\n    \"string (deep insight #4)\",\n    \"string (deep insight #5)\",\n    \"string (deep insight #6)\",\n    \"string (deep insight #7)\",\n    \"string (deep insight #8)\",\n    \"string (deep insight #9)\",\n    \"string (deep insight #10)\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        940,
+        120
+      ],
+      "id": "99eb3a9f-a81b-4cb3-8a11-7b9cd6be91ba",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblK3NiBqgNwCbFN2",
+          "mode": "list",
+          "cachedResultName": "Main Data",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblK3NiBqgNwCbFN2"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Score": "={{ $json.output.conversion_score }}",
+            "name": "={{ $('Google Drive').item.json.originalFilename }}",
+            "Data": "={{ JSON.stringify($('AI Agent').item.json.output) }}\n",
+            "Strengths": "={{ JSON.stringify($json.output.strengths) }}\n",
+            "Weaknesses": "={{ JSON.stringify($json.output.weaknesses) }}",
+            "Deep Insights": "={{ JSON.stringify($json.output.insights) }}",
+            "Reason": "={{ $json.output.reason }}",
+            "Set": "2"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Set",
+              "displayName": "Set",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Strengths",
+              "displayName": "Strengths",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Weaknesses",
+              "displayName": "Weaknesses",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deep Insights",
+              "displayName": "Deep Insights",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        -100
+      ],
+      "id": "7b86cfeb-623b-4077-adc4-5e9496b9fe7e",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-sonnet",
+        "options": {
+          "maxTokens": 1000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        700,
+        100
+      ],
+      "id": "75b9234f-e3e3-4651-a5e6-c3f085733dd4",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tK4fGp1BKa1tGzOk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        120
+      ],
+      "id": "9e451095-29ce-4e8e-b431-997264d6a40e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "d2QnYDakr4QNj9Lt",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f9e461eb-bcbb-4547-98de-f7d6c42b2295",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1abe18ca67ac01356ee2a2a8862dd117cfb0e58e6cc0b6f33b9c353356d83e41"
+  },
+  "id": "PCPZHxoKFuH2CKMW",
+  "tags": []
+}

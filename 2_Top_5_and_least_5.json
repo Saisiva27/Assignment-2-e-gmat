@@ -1,0 +1,554 @@
+{
+  "name": "Top 5 and least 5",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        100
+      ],
+      "id": "5454d949-08b8-4b50-857d-ca96b8503a27",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblK3NiBqgNwCbFN2",
+          "mode": "list",
+          "cachedResultName": "Main Data",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblK3NiBqgNwCbFN2"
+        },
+        "filterByFormula": "{Set} = 2",
+        "returnAll": false,
+        "limit": 5,
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Score",
+              "direction": "desc"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -120,
+        -40
+      ],
+      "id": "b2a0d240-0a76-45bb-8a4a-8fdbdde13746",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Deep Insights'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert in sales analysis and sales coaching.\n\nYou are provided with the structured deep insights extracted from the top  best-converting sales calls. Your task is to analyze and synthesize this data to deliver a concise yet detailed report.\n\n🎯 Your Objectives:\nExplain Why This Call Converted Well\n\nIdentify the common strengths across the call.\n\nHighlight sales rep behaviors, prospect engagement patterns, and call dynamics that drove conversion.\n\nSupport with evidence from insights (e.g., urgency, emotional triggers, follow-up clarity, value alignment).\n\nSuggest 3 Key Areas for Improvement\n\nEven though these are top-performing calls, every rep can improve.\n\nIdentify patterns of missed opportunities, partial objections, or communication aspects that could be optimized.\n\nKeep suggestions actionable, specific, and backed by insight data.\n\n🧠 Guidelines for Insight Interpretation:\nLook for patterns in:\n\nPositive and negative buying signals\n\nProspect decision-making behavior\n\nObjection handling success/failure\n\nCall pacing, tone, and control\n\nTrust-building moments and emotional leverage\n\nFollow-up structure and urgency creation\n\nUse of proof points and product differentiation\nNOTE : conversion_summary length (upto 15 lines)\nresponse format:{\n  \"conversion_summary\": \"A detailed paragraph summarizing why this  call was successful. Include the most impactful factors that contributed to the conversion.\",\n  \"improvement_recommendations\": [\n    \"Area 1: Explanation\",\n    \"Area 2: Explanation\",\n    \"Area 3: Explanation\"\n  ]\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        100,
+        -40
+      ],
+      "id": "30059993-33c6-4b54-b5dd-95c9a851c9db",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        160
+      ],
+      "id": "6551778e-46ea-4220-a957-6cd0e118d296",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "d2QnYDakr4QNj9Lt",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"conversion_summary\": \"A detailed paragraph summarizing why this  call was successful. Include the most impactful factors that contributed to the conversion.\",\n  \"improvement_recommendations\": [\n    \"Area 1: Explanation\",\n    \"Area 2: Explanation\",\n    \"Area 3: Explanation\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        160
+      ],
+      "id": "8fe28e03-9267-4096-843c-1600b1ec46d7",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblZiDAMDbIyq5ZnZ",
+          "mode": "list",
+          "cachedResultName": "top 5 calls",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblZiDAMDbIyq5ZnZ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Airtable').item.json.name }}",
+            "Score": "={{ $('Airtable').item.json.Score }}",
+            "Conversion Summary": "={{ $json.output.conversion_summary }}",
+            "Improvements Recommendations": "={{ JSON.stringify($json.output.improvement_recommendations) }}",
+            "Set": "={{ $('Airtable').item.json.Set }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Set",
+              "displayName": "Set",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversion Summary",
+              "displayName": "Conversion Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Improvements Recommendations",
+              "displayName": "Improvements Recommendations",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        460,
+        -40
+      ],
+      "id": "e7134910-f030-44a7-9d2e-64cb36164edd",
+      "name": "Airtable1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblK3NiBqgNwCbFN2",
+          "mode": "list",
+          "cachedResultName": "Main Data",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblK3NiBqgNwCbFN2"
+        },
+        "filterByFormula": "{Set} = 2",
+        "returnAll": false,
+        "limit": 5,
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Score"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -140,
+        400
+      ],
+      "id": "0b5a8a95-0d65-40ff-b085-49232ae1efdd",
+      "name": "Airtable2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Deep Insights'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert in sales analysis and coaching.\n\nYou are provided with structured deep insights from a low-converting or non-converting sales call. Your task is to analyze the data and deliver an accurate diagnostic evaluation of why the conversion likelihood was low and what could have been done better.\n\n🎯 Your Objectives:\n1. Explain Why This Call Did Not Convert Well\nIdentify the barriers, weaknesses, or missed moments in the call.\n\nHighlight specific prospect behaviors, objections, or engagement issues that indicated lack of commitment or readiness.\n\nFocus on where the rep lost momentum, failed to build trust, missed alignment, or didn’t create urgency.\n\nSupport your analysis with direct evidence from the insights (e.g., lack of next steps, pricing confusion, weak objection handling, poor engagement, etc.).\n\n2. Suggest 3 Key Areas for Improvement\nEven though the call did not convert, it’s a learning opportunity.\n\nPinpoint specific behaviors or decisions from the sales rep that can be improved.\n\nThese could relate to discovery, pacing, tone, objection handling, qualification, urgency, emotional resonance, or value articulation.\n\nBack up your suggestions with insight data and make them actionable.\nNOTE : conversion summary length upto 15 lines\nresponse format:\n{\n  \"conversion_summary\": \"A detailed paragraph summarizing why this call was unsuccessful or had low conversion potential. Include the most significant conversion blockers and missed opportunities.\",\n  \"improvement_recommendations\": [\n    \"Area 1: Explanation\",\n    \"Area 2: Explanation\",\n    \"Area 3: Explanation\"\n  ]\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        80,
+        400
+      ],
+      "id": "8f92ac5f-5c89-4056-9491-9e049328868f",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        620
+      ],
+      "id": "b35c8095-efd7-49e2-b498-819c2525206d",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "d2QnYDakr4QNj9Lt",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"conversion_summary\": \"A detailed paragraph summarizing why this call was unsuccessful or had low conversion potential. Include the most significant conversion blockers and missed opportunities.\",\n  \"improvement_recommendations\": [\n    \"Area 1: Explanation\",\n    \"Area 2: Explanation\",\n    \"Area 3: Explanation\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        340,
+        620
+      ],
+      "id": "9f963a84-44d7-49af-b3f4-04a894e8258f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblK8MJfWQnRroHoZ",
+          "mode": "list",
+          "cachedResultName": "least 5 calls",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblK8MJfWQnRroHoZ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Airtable2').item.json.name }}",
+            "Set": "={{ $('Airtable2').item.json.Set }}",
+            "Score": "={{ $('Airtable2').item.json.Score }}",
+            "Conversion Summary": "={{ $json.output.conversion_summary }}",
+            "Improvements Recommendations": "={{ JSON.stringify($json.output.improvement_recommendations) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Set",
+              "displayName": "Set",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversion Summary",
+              "displayName": "Conversion Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Improvements Recommendations",
+              "displayName": "Improvements Recommendations",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        440,
+        400
+      ],
+      "id": "10a5de33-b1be-4153-8681-af2a06ee2c56",
+      "name": "Airtable3",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Airtable2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Airtable1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable1": {
+      "main": [
+        []
+      ]
+    },
+    "Airtable2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Airtable3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d0df6c4c-2919-4296-a9df-b9e2ff49a4a9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1abe18ca67ac01356ee2a2a8862dd117cfb0e58e6cc0b6f33b9c353356d83e41"
+  },
+  "id": "hi5QpLHbjzrLm4mx",
+  "tags": []
+}

@@ -1,0 +1,306 @@
+{
+  "name": "Individual Inferences",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ],
+      "id": "8ef2fefc-be1b-4553-8e6b-6045019c37b0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblK3NiBqgNwCbFN2",
+          "mode": "list",
+          "cachedResultName": "Main Data",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblK3NiBqgNwCbFN2"
+        },
+        "filterByFormula": "{Set} = 2",
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "name"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -100,
+        -40
+      ],
+      "id": "19fecc76-70ea-4c2c-bcae-9e869af550a1",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Score : {{ $json.Score }}\n\n{{ $json['Deep Insights'] }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a sales call performance analyst.\n\nYou will receive structured insights from a single sales call — either a high-performing (converted) or low-performing (not converted) conversation.\n\nYour job is to analyze why the outcome occurred and determine whether it was driven primarily by:\n\nCustomer-side factors (e.g., urgency, objections, budget)\n\nSales rep performance (e.g., rapport, objection handling, follow-up)\n\nOr a combination of both\n\n🧠 Instructions:\nAnalyze the provided call insights to identify the dominant conversion factor.\n\n\n\nSupport your findings with:\nEXTRACT ALL THE APPROPRIATE FROM THE INSIGHTS\n\n📊 Statistical evidence (conversion patterns, behavioral trends)\n\n🗣️ Anecdotal evidence (quotes or behavior from the transcript)\n\nNOTE : maintain the length of summary_analysis is upto  5 lines\n\njson format:\n{\n  \"likely_conversion_factor\": \"customer / sales_rep / both\",\n  \"summary_analysis\": \"A detailed explanation of what drove the result, including both statistical and anecdotal evidence.\",\n  \"supporting_evidence\": {\n    \"statistical_evidence\": \"Observed trends or correlations, e.g., 80% of low conversions had no follow-up clarity.\",\n    \"anecdotal_evidence\": \"Example quotes or behaviors from the transcript, e.g., 'prospect showed hesitation about time commitment, which was not addressed.'\"\n  }\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        120,
+        -40
+      ],
+      "id": "1f02b5fa-bf33-4c3a-914e-86ba600081fe",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"likely_conversion_factor\": \"customer / sales_rep / both\",\n  \"summary_analysis\": \"A detailed explanation of what drove the result, including both statistical and anecdotal evidence.\",\n  \"supporting_evidence\": {\n    \"statistical_evidence\": \"Observed trends or correlations, e.g., 80% of low conversions had no follow-up clarity.\",\n    \"anecdotal_evidence\": \"Example quotes or behaviors from the transcript, e.g., 'prospect showed hesitation about time commitment, which was not addressed.'\"\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        300,
+        180
+      ],
+      "id": "5e4ee753-c63d-447a-a0c9-18ffc4af11f9",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl5rbKCX9AyJBhqo",
+          "mode": "list",
+          "cachedResultName": "INDIVIDUAL Inferences",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tbl5rbKCX9AyJBhqo"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Set": "={{ $('Airtable').item.json.Set }}",
+            "Name": "={{ $('Airtable').item.json.name }}",
+            "Score": "={{ $('Airtable').item.json.Score }}",
+            "Summary Analysis": "={{ $json.output.summary_analysis }}",
+            "Statistical_Evidence": "={{ $json.output.supporting_evidence.statistical_evidence }}",
+            "Anecdotal_Evidence": "={{ $json.output.supporting_evidence.anecdotal_evidence }}",
+            "Likely Conversion Factor (customer / sales_rep / both)": "={{ $json.output.likely_conversion_factor }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Set",
+              "displayName": "Set",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Likely Conversion Factor (customer / sales_rep / both)",
+              "displayName": "Likely Conversion Factor (customer / sales_rep / both)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Summary Analysis",
+              "displayName": "Summary Analysis",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Statistical_Evidence",
+              "displayName": "Statistical_Evidence",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Anecdotal_Evidence",
+              "displayName": "Anecdotal_Evidence",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -19.5
+      ],
+      "id": "e9839b68-b1bd-4537-bc24-c8cfe18e7025",
+      "name": "Airtable1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        80,
+        160
+      ],
+      "id": "3f3b4522-0f69-485f-aeae-c4b500b35cfb",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tK4fGp1BKa1tGzOk",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Airtable1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0f34f5a9-ba47-4ee7-add1-ee3c9ff403f1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1abe18ca67ac01356ee2a2a8862dd117cfb0e58e6cc0b6f33b9c353356d83e41"
+  },
+  "id": "JzIymyAxdXZzl5J0",
+  "tags": []
+}

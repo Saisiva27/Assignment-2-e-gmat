@@ -1,0 +1,721 @@
+{
+  "name": "Combined Inferences 2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        180
+      ],
+      "id": "f46ee1bc-4c2d-402c-8ac0-0489cc518279",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblK3NiBqgNwCbFN2",
+          "mode": "list",
+          "cachedResultName": "Main Data",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblK3NiBqgNwCbFN2"
+        },
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Set"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -180,
+        -20
+      ],
+      "id": "81186f30-c566-4fab-ba92-6eda6180e36e",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let set1Summaries = [];\nlet set2Summaries = [];\n\nfor (const item of items) {\n  const summary = item.json[\"Reason\"];\n  const set = item.json[\"Set\"];\n\n  if (summary && set === \"1\") {\n    set1Summaries.push(summary);\n  } else if (summary && set === \"2\") {\n    set2Summaries.push(summary);\n  }\n}\n\nreturn [\n  {\n    json: {\n      combined_summary_analysis: {\n        set_1: set1Summaries.join(\"\\n\\n---\\n\\n\"),\n        set_2: set2Summaries.join(\"\\n\\n---\\n\\n\")\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        40,
+        -20
+      ],
+      "id": "8e149472-2f17-4d16-bffa-92fcae415ed1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=set 1 :  {{ $json.combined_summary_analysis.set_1 }}\nset 2 : {{ $json.combined_summary_analysis.set_2 }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a sales call performance evaluator.\n\nYou will receive summary analyses of two sets of sales calls — Set 1 and Set 2.\n\n🔍 Your Tasks:\n\nDetermine which set had more likely customer conversions (only respond with \"Set 1\" or \"Set 2\").\n\nBriefly explain the performance differences between the sets, considering factors like:\n\nSales rep behavior\n\nCustomer motivation and engagement\n\nObjection handling quality\n\nUrgency creation and timeline alignment\n\nCall flow, trust-building, and follow-up clarity\n\nAnalyze what primarily contributed to the performance difference:\n\nWas it due to customer differences?\n\nOr due to sales rep behavior?\n\nOr a combination of both?\n\noutput json format : \n{\n  \"higher_conversion_set\": \"Set 1\",  // or \"Set 2\"\n  \"performance_difference_summary\": \"Short paragraph explaining why one set performed better based on patterns in the summaries.\",\n  \"primary_difference_driver\": \"customer / sales_rep / both\",\n  \"driver_analysis_summary\": \"Brief explanation (4–6 lines) of whether the performance gap was driven more by customer factors, sales rep performance, or both.\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        260,
+        -20
+      ],
+      "id": "0a36ed06-89a4-498f-a90b-cb7f83c26dd8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"higher_conversion_set\": \"Set 1\", \n  \"performance_difference_summary\": \"Short paragraph explaining why one set performed better based on patterns in the summaries.\",\n  \"primary_difference_driver\": \"customer / sales_rep / both\",\n  \"driver_analysis_summary\": \"Brief explanation (4–6 lines) of whether the performance gap was driven more by customer factors, sales rep performance, or both.\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        160
+      ],
+      "id": "552cc912-bf07-407e-b3b1-9ef43e5f7c88",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkzyjjK60sPaHPp",
+          "mode": "list",
+          "cachedResultName": "COMBINED Inferences",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblkzyjjK60sPaHPp"
+        },
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        620,
+        -20
+      ],
+      "id": "9a2203f8-9d32-4f6a-9297-2ed2bcef92c4",
+      "name": "Airtable1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkzyjjK60sPaHPp",
+          "mode": "list",
+          "cachedResultName": "COMBINED Inferences",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblkzyjjK60sPaHPp"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "3 areas of improvement even in best calls": "={{ $json[\"3 areas of improvement even in best calls\"] }}",
+            "3 areas of improvement in Least likely calls": "={{ $json[\"3 areas of improvement in Least likely calls\"] }}",
+            "which set of calls resulted in more customer conversions": "={{ $('AI Agent').item.json.output.higher_conversion_set }}",
+            "performance differences between Sets copy": "={{ $('AI Agent').item.json.output.performance_difference_summary }}",
+            "demographic or rep behavior differences": "=WHO :  {{ $('AI Agent').item.json.output.primary_difference_driver }}  \n\n{{ $('AI Agent').item.json.output.driver_analysis_summary }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "which set of calls resulted in more customer conversions",
+              "displayName": "which set of calls resulted in more customer conversions",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "performance differences between Sets copy",
+              "displayName": "performance differences between Sets copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "demographic or rep behavior differences",
+              "displayName": "demographic or rep behavior differences",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "statistical and anecdotal evidence",
+              "displayName": "statistical and anecdotal evidence",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "3 areas of improvement even in best calls",
+              "displayName": "3 areas of improvement even in best calls",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "3 areas of improvement in Least likely calls",
+              "displayName": "3 areas of improvement in Least likely calls",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        840,
+        -20
+      ],
+      "id": "e367a23f-1db2-4737-9916-aed26e2cf20b",
+      "name": "Airtable2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl5rbKCX9AyJBhqo",
+          "mode": "list",
+          "cachedResultName": "INDIVIDUAL Inferences",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tbl5rbKCX9AyJBhqo"
+        },
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Set"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        300
+      ],
+      "id": "db622732-6633-4b1e-b45c-b6ed1cbd5dd1",
+      "name": "Airtable3",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let set1Stats = [];\nlet set1Anecdotes = [];\nlet set2Stats = [];\nlet set2Anecdotes = [];\n\nfor (const item of items) {\n  const set = item.json?.Set?.toString();\n  const stat = item.json?.Statistical_Evidence;\n  const anecdote = item.json?.Anecdotal_Evidence;\n\n  if (set === \"1\") {\n    if (stat) set1Stats.push(stat);\n    if (anecdote) set1Anecdotes.push(anecdote);\n  }\n\n  if (set === \"2\") {\n    if (stat) set2Stats.push(stat);\n    if (anecdote) set2Anecdotes.push(anecdote);\n  }\n}\n\nreturn [\n  {\n    json: {\n      set_1_statistical: set1Stats,\n      set_1_anecdotal: set1Anecdotes,\n      set_2_statistical: set2Stats,\n      set_2_anecdotal: set2Anecdotes\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        320
+      ],
+      "id": "57092c42-6cbd-41fa-9ecd-e378b43f2f98",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SET 1 statistical :  {{ $json.set_1_statistical }}\nSET 1 anecdotal : {{ $json.set_1_anecdotal }}\nSET 2 statistical : {{ $json.set_2_statistical }}\nSET 2 anecdotal : {{ $json.set_2_anecdotal }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a sales conversion analyst.\n\nYou are provided with combined statistical and anecdotal evidence from two sets of sales calls: **Set 1** and **Set 2**.\n\nYour tasks are:\n\n---\n\n1. **Interpret Statistical Evidence**  \n   - Identify and explain **conversion patterns**, **behavioral correlations**, and **quantitative insights** from the provided statistical data for each set.  \n   - Focus on trends such as urgency, pricing discussion, objection handling, or follow-up clarity that consistently affected conversions.  \n   - Compare if one set consistently performed better and why (based on data frequency or conversion indicators).\nNOTE : Not more than 5\n\n2. **Interpret Anecdotal Evidence**  \n   - Extract **qualitative examples** from the anecdotal content that illustrate the human factors influencing conversion outcomes.  \n   - Highlight moments of emotional triggers, hesitation, trust-building, or friction.  \n   - Use exact phrases or paraphrased examples from the data to support your interpretation.\nNOTE : not more than 5\n\n3. **Synthesize Key Differences**  \n   - Based on both statistical and anecdotal evidence, explain how **Set 1 and Set 2 differ** in terms of sales effectiveness.  \n   - Specify whether the difference was driven more by **customer behavior**, **sales rep performance**, or **alignment between both**.\n\n---\n\n### Output Format (JSON):\n```json\n{\n  \"set_1_summary\": {\n    \"statistical_insights\": [ \"string\", \"...\" ],\n    \"anecdotal_insights\": [ \"string\", \"...\" ]\n  },\n  \"set_2_summary\": {\n    \"statistical_insights\": [ \"string\", \"...\" ],\n    \"anecdotal_insights\": [ \"string\", \"...\" ]\n  },\n  \"comparative_insights\": \"Detailed paragraph summarizing why one set may have performed better than the other, using both statistical and anecdotal evidence.\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        240,
+        320
+      ],
+      "id": "9bae9239-4a35-4a53-92bf-92fdc808d8a6",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"set_1_summary\": {\n    \"statistical_insights\": [ \"string\", \"...\" ],\n    \"anecdotal_insights\": [ \"string\", \"...\" ]\n  },\n  \"set_2_summary\": {\n    \"statistical_insights\": [ \"string\", \"...\" ],\n    \"anecdotal_insights\": [ \"string\", \"...\" ]\n  },\n  \"comparative_insights\": \"Detailed paragraph summarizing why one set may have performed better than the other, using both statistical and anecdotal evidence.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        540
+      ],
+      "id": "206b7e44-933b-475f-9617-c856b3f14694",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkzyjjK60sPaHPp",
+          "mode": "list",
+          "cachedResultName": "COMBINED Inferences",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblkzyjjK60sPaHPp"
+        },
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        600,
+        320
+      ],
+      "id": "cbd0b64a-5976-4743-a1bb-51c33ad94148",
+      "name": "Airtable4",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appEHFtISimIx7acj",
+          "mode": "list",
+          "cachedResultName": "Assignment-2",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkzyjjK60sPaHPp",
+          "mode": "list",
+          "cachedResultName": "COMBINED Inferences",
+          "cachedResultUrl": "https://airtable.com/appEHFtISimIx7acj/tblkzyjjK60sPaHPp"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "which set of calls resulted in more customer conversions": "={{ $json['which set of calls resulted in more customer conversions'] }}",
+            "demographic or rep behavior differences": "={{ $json['demographic or rep behavior differences'] }}",
+            "performance differences between Sets copy": "={{ $json['performance differences between Sets copy'] }}",
+            "3 areas of improvement even in best calls": "={{ $json['3 areas of improvement even in best calls'] }}",
+            "3 areas of improvement in Least likely calls": "={{ $json['3 areas of improvement in Least likely calls'] }}",
+            "statistical and anecdotal evidence": "=SET 1 Statistical insights : \n{{ $('AI Agent1').item.json.output.set_1_summary.statistical_insights }}\n\nSET 1 Anecdotal insights : \n{{ $('AI Agent1').item.json.output.set_1_summary.anecdotal_insights }}\n\nSET 2 Stastical insights : \n{{ $('AI Agent1').item.json.output.set_2_summary.statistical_insights }}\n\nSET 2 Anecdotal insights : \n{{ $('AI Agent1').item.json.output.set_2_summary.anecdotal_insights }}\n\nComparitive Insights : \n{{ $('AI Agent1').item.json.output.comparative_insights }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "which set of calls resulted in more customer conversions",
+              "displayName": "which set of calls resulted in more customer conversions",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "performance differences between Sets copy",
+              "displayName": "performance differences between Sets copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "demographic or rep behavior differences",
+              "displayName": "demographic or rep behavior differences",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "statistical and anecdotal evidence",
+              "displayName": "statistical and anecdotal evidence",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "3 areas of improvement even in best calls",
+              "displayName": "3 areas of improvement even in best calls",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "3 areas of improvement in Least likely calls",
+              "displayName": "3 areas of improvement in Least likely calls",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        320
+      ],
+      "id": "564850d5-a8ad-4508-ac15-c5df410c6fb5",
+      "name": "Airtable5",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "HwRalTIUy50IWKoH",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-haiku",
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        200,
+        180
+      ],
+      "id": "eb0de37e-21ae-40ac-8b77-ac06b019459e",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tK4fGp1BKa1tGzOk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3-haiku",
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        180,
+        520
+      ],
+      "id": "acdb63b0-7eb2-4795-87ff-db82a9212eee",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tK4fGp1BKa1tGzOk",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Airtable3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Airtable1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable1": {
+      "main": [
+        [
+          {
+            "node": "Airtable2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable3": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Airtable4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable4": {
+      "main": [
+        [
+          {
+            "node": "Airtable5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d746e031-0e88-4c3b-8f54-322ec27bbe0c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1abe18ca67ac01356ee2a2a8862dd117cfb0e58e6cc0b6f33b9c353356d83e41"
+  },
+  "id": "FkpZr8KGpeo0rPv2",
+  "tags": []
+}
